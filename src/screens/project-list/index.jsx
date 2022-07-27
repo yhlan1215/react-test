@@ -9,7 +9,6 @@ export const ProjectListScreen = () => {
     return(
         <div className="mainContainer">
                 <div className="subContainer1">
-                <h1>书籍列表</h1>
                 <BookList onBookClick={(id)=>{setSelectID(id)}} onBookCreate={()=>{setSelectID("newBook")}}
                 outdatedFlag={bookListOutdatedFlag}/></div>
                 <div className="subContainer2"><BookDetail id={selelctID} onBookSaved={()=>{setBookListOutdatedFlag(!bookListOutdatedFlag)}}/></div>
