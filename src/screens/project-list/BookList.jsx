@@ -1,63 +1,56 @@
-import axios from "axios"
-import { useEffect,useState } from "react"
-import {Button,Table, Typography} from "antd"
-import {EditOutlined,DeleteOutlined} from '@ant-design/icons'
+import {Button, Table, Typography} from "antd";
+import {useEffect,useState} from "react";
+import axios from "axios";
 
 export const BookList = ({onBookClick,onBookCreate,outdatedFlag}) => {
     const [books,setBooks] = useState([])
-    useEffect(()=>{
+
+    useEffect (()=>{
         getBooks()
     },[outdatedFlag])
 
     const getBooks = async() => {
-        const{data}=
-        await axios({
+        const {data} = await axios({
             url:"http://localhost:8080/books"
         })
         setBooks(data)
     }
 
-    const deleteBook = async(id) => {
+    const deleteBook = async(bookID) => {
         await axios({
             method:"delete",
-            url:`http://localhost:8080/books/${id}`
+            url:`http://localhost:8080/books/${bookID}`
         })
         getBooks()
     }
-
     return(
-        <div> 
+        <div>
             <Typography.Title>
                 书籍列表
             </Typography.Title>
-            <Button icon={<EditOutlined /> } onClick={onBookCreate}>新建</Button>
-            <Table dataSource={books} columns = {[
-                    {
-                    title: '书名',
-                    dataIndex: 'name',
-                    key: 'name',
-                    render: (bookName,book,index)=> <a onClick={() => {onBookClick(books.find((book)=>book.name===bookName).id)}}>{bookName}</a>,
+            <Button onClick={()=>{onBookCreate()}}>新建</Button>
+            <Table
+            dataSource={books} columns={[
+                {   
+                    title:"书名",
+                    dataIndex:"name",
+                    key:"name",
+                    render:(bookName,book)=><a onClick={()=>{onBookClick(book.id)}}>{bookName}</a>
                 },
                 {
-                    title: '价格',
-                    dataIndex: 'price',
-                    key: 'price',
+                    title:"作者",
+                    dataIndex:"author",
+                    key:"author",
+                    render:(author)=>{return author.name} 
                 },
                 {
-                    title: '作者',
-                    dataIndex: 'author',
-                    key: 'author',
-                    render:(author)=>{return author.name}
-                },
-                {
-                    align:'right',
-                    title: 'Action',
-                    dataIndex: '',
-                    key: 'x',
-                    render:(bookName,book,index)=>  <a onClick={()=>{deleteBook(book.id)}}><DeleteOutlined /></a>,
-                },
-                ]}>
+                    title:"",
+                    dataIndex:"deleteBook",
+                    key:"deleteBook",
+                    render:(bookName,book)=><a onClick={()=>{deleteBook(book.id)}}>x</a>
+                }
+            ]}>
             </Table>
-        </div>
+            </div>
     )
 }

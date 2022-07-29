@@ -1,242 +1,158 @@
-import { Button, Form, Input, InputNumber, Radio, Select,  } from "antd";
-import FormItem from "antd/lib/form/FormItem";
+import {useEffect,useRef, useState} from "react";
+import { Button, Form, InputNumber, Radio, Select } from "antd";
 import axios from "axios";
-import { useEffect,useState } from "react";
-
-const {Option} = Select
 
 export const BookDetail = ({id,onBookSaved}) => {
-    const [book,setBook] = useState(undefined)
+    const formRef = useRef()
     const [authors,setAuthors] = useState([])
-    const [originalBook,setOriginalBook] = useState(undefined)
-    useEffect(()=>{
+    const [originalBook,setOriginalBook] = useState()
+    const {Option} = Select
+   
+    useEffect(() => {
         getAuthors()
-        },[])
+    },[])
 
-    useEffect(()=>{
+    useEffect(() => {
         if(id){
             if(id!=="newBook"){
-        getOneBook(id)
-            }
+                getOneBook(id)}
             else{
-                const newBook ={
-                    "isOld": false,
+                const newBook = {
+                    "isOld":Boolean,
                     "name": "",
                     "author": {
-                        "id": "62d283e95b4af466755e9ecb"
+                        "id": ""
                     },
                     "price": 0,
-                    "category": "fiction",
-                    "language": "Chinese",
+                    "category": "",
+                    "language": "",
                     "id": ""
                 }
-                setBook(newBook)
+                formRef.current.setFieldsValue(newBook)
                 setOriginalBook(newBook)
-            }
-        }
+        }}
     },[id])
 
-        const getOneBook = async(bookID) => {
-        const{data} =
-        await axios({
+    const getOneBook = async(bookID) => {
+        const {data} = await axios({
             url:`http://localhost:8080/books/${bookID}`
         })
-        setBook(data)
+         formRef.current.setFieldsValue(data)
+         setOriginalBook(data)
+    }
+
+    const getAuthors = async() => {
+        const{data} = await axios ({
+            url:"http://localhost:8080/authors"
+        })
+        setAuthors(data)
+    }
+
+    const putOneBook = async(book) => {
+        const{data} = await axios({
+            method:"put",
+            url:`http://localhost:8080/books/${id}`,
+            data:book
+        })
+        formRef.current.setFieldsValue(data)
+        setOriginalBook(data)
+    }
+    const createBook = async(book) => {
+        const{data} =
+        await axios ({
+            method:"post",
+            url:"http://localhost:8080/books",
+            data:book
+        })
+        const author = authors.find((author)=>{return author.id===data.author})
+        data.author={id:author.id,name:author.name}
+        formRef.current.setFieldsValue(data)
         setOriginalBook(data)
     }
 
-        const getAuthors = async() => {
-            const{data}=
-            await axios({
-                url:"http://localhost:8080/authors"
-        })
-        setAuthors(data)
-        }
-
-        const putOneBook = async() =>{
-            book.author = book.author.id
-            const{data} = 
-            await axios({
-                method:"put",
-                url:`http://localhost:8080/books/${id}`,
-                data:book
-            })
-            setBook(data)
-            setOriginalBook(data)
-        }
-
-        const createBook = async() => {
-            book.author = book.author.id
-            const{data} =
-            await axios ({
-                method:"post",
-                url:"http://localhost:8080/books",
-                data:book
-            })
-            setBook(data)
-            setOriginalBook(data)
-        }
-
-        const onSave = async() => {
+    const onSave = () => {
+        formRef.current.validateFields()
+        .then(async(book) => {
+            const clonedBook = JSON.parse(JSON.stringify(book))
+            clonedBook.author = clonedBook.author.id
             if(id!=="newBook"){
-                await putOneBook()
-            }else{
-                await createBook()
+                await putOneBook(clonedBook)
+                }
+            else{
+                await createBook(clonedBook)
             }
             onBookSaved()
-        }
-        
-        const onCancel = () => {
-            setBook(originalBook)
-        }
+        })
+    }
 
-    if(!book) return null
-    else return(
-        <div>
-            {/* <div>
-            <div>书名</div>
-            <input type="text" value={book.name} onChange={(event)=>{
-                const clonedBook = JSON.parse(JSON.stringify(book))
-                clonedBook.name = event.currentTarget.value
-                setBook(clonedBook)
-            }}/>
-            <div>作者</div>
-            <select value={book.author.id} onChange={(event)=>{
-                const clonedBook = JSON.parse(JSON.stringify(book))
-                clonedBook.author.id = event.currentTarget.selectedOptions[0].value
-                setBook(clonedBook)
-            }}>
-                {authors.map((author)=><option key={author.id} value={author.id}>{author.name}</option>)}
-            </select>
-            <div>类别</div>
-            <select value={book.category} onChange={(event)=>{
-                const clonedBook = JSON.parse(JSON.stringify(book))
-                clonedBook.category = event.currentTarget.selectedOptions[0].value
-                setBook(clonedBook)
-            }}>
-                <option key="fiction" value="fiction">小说</option>
-                <option key="literature" value="literature">文学</option>
-                <option key="art" value="art">艺术</option>
-                <option key="animation humor" value="animation humor">动画幽默</option>
-                <option key="entertainment fashion" value="entertainment fashion">娱乐时尚</option>
-                <option key="tourism" value="tourism">旅游</option>
-                <option key="map geography" value="map geography">地图地理</option>
-            </select>
-            <div>新旧</div>
-            <input name="isOld" type="radio" checked={!book.isOld} onChange={(event)=>{
-                const clonedBook = JSON.parse(JSON.stringify(book))
-                clonedBook.isOld = false
-                setBook(clonedBook)
-            }}/>新
-            <input name="isOld" type="radio" checked={book.isOld} onChange={(event)=>{
-                const clonedBook = JSON.parse(JSON.stringify(book))
-                clonedBook.isOld = true
-                setBook(clonedBook)
-            }}/>旧
-            <div>语言</div>
-            <select value={book.language} onChange={(event)=>{
-                const clonedBook = JSON.parse(JSON.stringify(book))
-                clonedBook.language = event.currentTarget.selectedOptions[0].value
-                setBook(clonedBook)
-            }}>
-                <option key="Chinese" value="Chinese">中文</option>
-                <option key="English" value="English">英语</option>
-            </select>
-            <div>价格</div>
-            <input type="number" value={book.price} onChange={(event)=>{
-                const clonedBook = JSON.parse(JSON.stringify(book))
-                clonedBook.price = parseFloat(event.currentTarget.value)
-                setBook(clonedBook)
-            }}/>
-            </div>
-            <button onClick={onSave}>保存</button>
-            <button onClick={onCancel}>取消</button> */}
-            <Form
-            name="bookDetail">
+    const onCancel = () => {
+        formRef.current.setFieldsValue(originalBook)
+    }
+    
+    return(
+            <Form ref={formRef}>
                 <Form.Item
-                label="书名"
-                name="bookName"
-                rules={[
-                    {
-                        required:true,
-                        message:"请输入书名"
-                    }
-                ]}>
-                    <Input type="text" setFieldsValue(book.name) placeholder="书名" onChange={(event)=>{
-                        const clonedBook = JSON.parse(JSON.stringify(book))
-                        clonedBook.name = event.currentTarget.value
-                        setBook(clonedBook)
-                    }}/>
+                    label="书籍名称"
+                    name="name"
+                    rules={[
+                        {required:true,
+                        message:"请输入书名"}
+                    ]}>
+                    <input type="text" placeholder="书名"/>
                 </Form.Item>
-                <Form.Item
-                label="价格"
-                name="bookPrice"
-                rules={[
-                    {
-                        required:true,
-                        message:"请输入价格"
-                    }
-                ]}>
-                    <InputNumber addonBefore="¥" min="0" defaultValue={book.price} placeholder="价格" onChange={(event)=>{
-                        const clonedBook = JSON.parse(JSON.stringify(book))
-                        clonedBook.price = parseFloat(event.currentTarget.value)
-                        setBook(clonedBook)
-                    }}/>
-                </Form.Item>
-                <FormItem
-                label="作者"
+                <Form.Item 
+                    label="价格"
+                    name="price"
+                    rules={[
+                        {
+                            required:true,
+                            message:"请输入价格"
+                        }
+                    ]}
                 >
-                    <Select value={book.author.id} onChange={(event)=>{
-                        const clonedBook = JSON.parse(JSON.stringify(book))
-                        clonedBook.author.id = event.currentTarget.selectedOptions[0].value
-                        setBook(clonedBook)
-                    }}>
+                        <InputNumber placeholder="价格"/>
+                </Form.Item>
+                <Form.Item
+                    label="作者"
+                    name={["author","id"]}                
+                    >
+                    <Select>
                         {authors.map((author)=><Option value={author.id}>{author.name}</Option>)}
                     </Select>
-                </FormItem>
-                <Form.Item
-                label="种类">
-                    <Select defaultValue={book.category} onChange={(event)=>{
-                        const clonedBook = JSON.parse(JSON.stringify(book))
-                        clonedBook.category = event.currentTarget.selectedOptions[0].value
-                        setBook(clonedBook)
-                    }}>
-                        <Option key="fiction" value="fiction">小说</Option>
-                        <Option key="literature" value="literature">文学</Option>
-                        <Option key="art" value="art">艺术</Option>
-                        <Option key="animation humor" value="animation humor">动画幽默</Option>
-                        <Option key="entertainment fashion" value="entertainment fashion">娱乐时尚</Option>
-                        <Option key="tourism" value="tourism">旅游</Option>
-                        <Option key="map geography" value="map geography">地图地理</Option>
-                    </Select>   
                 </Form.Item>
                 <Form.Item
-                label="新旧">
-                    <Radio.Group key="bookIsOld" defaultValue={book.isOld}>
-                        <Radio value={book.isOld} onChange={(event)=>{
-                        const clonedBook = JSON.parse(JSON.stringify(book))
-                        clonedBook.isOld = true
-                        setBook(clonedBook)
-                    }}>新</Radio>
-                        <Radio value={!book.isOld}>旧</Radio>
-                    </Radio.Group>
+                    label="书籍类别"
+                    name="category">
+                        <Select>
+                            <Option key="fiction" value="fiction">小说</Option>
+                            <Option key="literature" value="literature">文学</Option>
+                            <Option key="art" value="art">艺术</Option>
+                            <Option key="animation humor" value="animation humor">动画幽默</Option>
+                            <Option key="entertainment fashion" value="entertainment fashion">娱乐时尚</Option>
+                            <Option key="tourism" value="tourism">旅游</Option>
+                            <Option key="map geography" value="map geography">地图地理</Option>
+                        </Select>
                 </Form.Item>
                 <Form.Item
-                label="语言">
-                    <Select key="bookLanguage" defaultValue={book.language} onChange={(event)=>{
-                        const clonedBook = JSON.parse(JSON.stringify(book))
-                        clonedBook.language = event.currentTarget.selectedOptions[0].value
-                        setBook(clonedBook)
-                    }}>
-                        <Option key="Chinese" value="Chinese">中文</Option>
-                        <Option key="English" value="English">英语</Option>
-                    </Select>
+                    label="新旧"
+                    name="isOld">
+                        <Radio.Group>
+                            <Radio value={false}>新</Radio>
+                            <Radio value={true}>旧</Radio>
+                        </Radio.Group>    
+                </Form.Item>
+                <Form.Item
+                    label="语言"
+                    name="language">
+                        <Select>
+                            <Option value="English">英语</Option>
+                            <Option value="Chinese">中文</Option>
+                        </Select>
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary" onClick={onSave}>保存</Button>
+                    <Button onClick={onSave}>保存</Button>
                     <Button onClick={onCancel}>取消</Button>
                 </Form.Item>
             </Form>
-        </div>
     )
 }
