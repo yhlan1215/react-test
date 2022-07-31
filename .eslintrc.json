@@ -1,0 +1,50 @@
+{
+  "env": {
+      "browser": true,
+      "es2021": true,
+      "node": true,
+      "jest/globals": true
+  },
+  "extends": [
+      "plugin:react/recommended",
+      "airbnb"
+  ],
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "requireConfigFile": false,
+    "babelOptions": {
+      "babelrc": false,
+      "configFile": false,
+      "presets": ["@babel/preset-react"]
+    }
+  },
+  "plugins": [
+      "react",
+      "jest"
+  ],
+  "rules": {
+    "import/no-extraneous-dependencies": 0,
+    "import/no-cycle": 0,
+    "import/prefer-default-export":0,
+    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
+    "react/jsx-props-no-spreading": 0,
+    "react/jsx-one-expression-per-line": 0,
+    "react/destructuring-assignment": 0,
+    "react/no-array-index-key": 0,
+    "react/prop-types": 0,
+    "react/react-in-jsx-scope": 0,
+    "comma-dangle": [2, "never"],
+    "max-len": [2, { "code": 200 }],
+    "no-nested-ternary": 0,
+    "no-param-reassign": 0,
+    "no-plusplus": 0,
+    "no-prototype-builtins": 0,
+    "no-restricted-globals": 0,
+    "no-use-before-define": 0,
+    "no-unused-expressions": 0,
+    "no-unused-vars": [2, { "args": "none" }],
+    "no-shadow": 0,
+    "object-curly-newline": 0,
+    "semi": [2, "never"]
+  }
+}
