@@ -5,14 +5,21 @@
 .subContainer1{
     display: flex;
     flex-direction: column;
-    width: 50%;
+    width: 30%;
     height: 100vh;
     border-style: double;
     border-width: 6px;
 }
 .subContainer2{
     text-align: center;
-    width: 100%;
+    width: 30%;
+    height: 100vh;
+    border-style: double;
+    border-width: 6px;
+}
+.subContainer3{
+    text-align: center;
+    width: 30%;
     height: 100vh;
     border-style: double;
     border-width: 6px;
