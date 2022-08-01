@@ -5,20 +5,21 @@ import { AuthorDetail } from './AuthorDetail'
 import './index.css'
 
 export function ProjectListScreen() {
-  const [selectID, setSelectID] = useState('')
+  const [selectBookId, setSelectBookId] = useState('')
+  const [selectAuthorId, setSelectAuthorId] = useState('')
   const [bookListOutdatedFlag, setBookListOutdatedFlag] = useState(false)
 
   return (
     <div className="mainContainer">
       <div className="subContainer1"><BookList
-        onBookClick={(bookID) => { setSelectID(bookID) }}
-        onBookCreate={(bookID) => { setSelectID('newBook') }}
-        onAuthorClick={(authorID) => { setSelectID(authorID) }}
+        onBookClick={(bookID) => { setSelectBookId(bookID) }}
+        onBookCreate={(bookID) => { setSelectBookId('newBook') }}
+        onAuthorClick={(authorID) => { setSelectAuthorId(authorID) }}
         outdatedFlag={bookListOutdatedFlag}
       />
       </div>
-      <div className="subContainer2"><BookDetail bookID={selectID} onBookSaved={() => { setBookListOutdatedFlag(!bookListOutdatedFlag) }} /></div>
-      <div className="subContainer3" authorID={selectID}><AuthorDetail /></div>
+      <div className="subContainer2"><BookDetail bookID={selectBookId} onBookSaved={() => { setBookListOutdatedFlag(!bookListOutdatedFlag) }} /></div>
+      <div className="subContainer3"><AuthorDetail authorID={selectAuthorId} /></div>
     </div>
   )
 }

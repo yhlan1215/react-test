@@ -1,39 +1,32 @@
-import { Form, Input } from 'antd'
 import axios from 'axios'
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
+import { List } from 'antd'
 
 export function AuthorDetail({ authorID }) {
-  const formRef = useRef()
+  const [author, setAuthor] = useState({})
 
   useEffect(() => {
-    getAuthor(authorID)
+    if (authorID) {
+      getAuthor()
+    }
   }, [authorID])
 
-  const getAuthor = async (authorID) => {
+  const getAuthor = async () => {
     const { data } = await axios({
       url: `http://localhost:8080/authors/${authorID}`
     })
-    formRef.current.setFieldsValue(data)
+    setAuthor(data)
   }
 
   return (
     <div>
-      <Form
-        ref={formRef}
-      >
-        <Form.Item
-          label="姓名"
-          name="name"
-        >
-          <Input />
-          <Form.Item
-            label="性别"
-            name="sex"
-          >
-            <input />
-          </Form.Item>
-        </Form.Item>
-      </Form>
+      <div>作者：{author.name}</div>
+      <div>性别：{author.sex}</div>
+      <div>出生日期：{author.birth}</div>
+      <List
+        dataSource={author.books}
+        renderItem={(item) => <List.Item>{item}</List.Item>}
+      />
     </div>
   )
 }
