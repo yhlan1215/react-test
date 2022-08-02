@@ -1,25 +1,24 @@
-import { useState } from 'react'
-import { BookList } from './BookList'
-import { BookDetail } from './BookDetail'
-import { AuthorDetail } from './AuthorDetail'
+import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom'
+import { BookPage } from './BookPage'
 import './index.css'
 
 export function ProjectListScreen() {
-  const [selectBookId, setSelectBookId] = useState('')
-  const [selectAuthorId, setSelectAuthorId] = useState('')
-  const [bookListOutdatedFlag, setBookListOutdatedFlag] = useState(false)
-
   return (
-    <div className="mainContainer">
-      <div className="subContainer1"><BookList
-        onBookClick={(bookID) => { setSelectBookId(bookID) }}
-        onBookCreate={(bookID) => { setSelectBookId('newBook') }}
-        onAuthorClick={(authorID) => { setSelectAuthorId(authorID) }}
-        outdatedFlag={bookListOutdatedFlag}
-      />
-      </div>
-      <div className="subContainer2"><BookDetail bookID={selectBookId} onBookSaved={() => { setBookListOutdatedFlag(!bookListOutdatedFlag) }} /></div>
-      <div className="subContainer3"><AuthorDetail authorID={selectAuthorId} /></div>
+    <div>
+      <Router>
+        <ul>
+          <li>
+            <Link to="/">首页</Link>
+          </li>
+          <li>
+            <Link to="/BookPage">书籍列表</Link>
+          </li>
+        </ul>
+        <Routes>
+          <Route path="/" component={ProjectListScreen} />
+          <Route path="/BookPage" component={BookPage} />
+        </Routes>
+      </Router>
     </div>
   )
 }

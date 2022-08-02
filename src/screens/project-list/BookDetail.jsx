@@ -107,7 +107,7 @@ export function BookDetail({ bookID, onBookSaved }) {
           label="价格"
           name="price"
         >
-          <InputNumber />
+          <InputNumber min="0" prefix="¥" />
         </Form.Item>
         <Form.Item
           label="种类"
@@ -142,7 +142,7 @@ export function BookDetail({ bookID, onBookSaved }) {
           </Select>
         </Form.Item>
         <Form.Item>
-          <Button onClick={onSave}>保存</Button>
+          <Button onClick={onSave} type="primary">保存</Button>
           <Button onClick={() => { formRef.current.setFieldsValue(originalBook) }}>取消</Button>
         </Form.Item>
       </Form>

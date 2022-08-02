@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { List } from 'antd'
+import { UserOutlined } from '@ant-design/icons'
 
 export function AuthorDetail({ authorID }) {
   const [author, setAuthor] = useState({})
@@ -20,12 +21,12 @@ export function AuthorDetail({ authorID }) {
 
   return (
     <div>
-      <div>作者：{author.name}</div>
+      <div><UserOutlined />{author.name}</div>
       <div>性别：{author.sex}</div>
       <div>出生日期：{author.birth}</div>
       <List
         dataSource={author.books}
-        renderItem={(item) => <List.Item>{item}</List.Item>}
+        renderItem={(item) => <List.Item>{item.name}</List.Item>}
       />
     </div>
   )
