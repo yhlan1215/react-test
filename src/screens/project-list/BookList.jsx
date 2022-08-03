@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { EditTwoTone, DeleteTwoTone } from '@ant-design/icons'
 
-export function BookList({ onBookClick, onBookCreate, outdatedFlag, onAuthorClick }) {
+export function BookList({ onBookClick, onBookCreate, outdatedFlag }) {
   const [books, setBooks] = useState([])
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export function BookList({ onBookClick, onBookCreate, outdatedFlag, onAuthorClic
             dataIndex: 'author',
             key: 'author',
             // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-            render: (bookName, book, index) => <Popover content="作者详情"><a onClick={() => { onAuthorClick(book.author.id) }}>{book.author.name}</a></Popover>
+            render: (author, book, index) => author.name
           },
           {
             title: 'action',
