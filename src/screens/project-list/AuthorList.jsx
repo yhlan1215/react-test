@@ -17,20 +17,22 @@ export function AuthorList() {
   }
 
   return (
-    <Table
-      dataSource={authors}
-      columns={[
-        {
-          title: '作者名',
-          dataIndex: 'name',
-          key: 'name'
-        },
-        {
-          title: '性别',
-          dataIndex: 'sex',
-          key: 'sex'
-        }
-      ]}
-    />
+    <div>
+      <Table
+        dataSource={authors}
+        columns={[
+          {
+            title: '作者名',
+            dataIndex: 'name',
+            key: 'name'
+          },
+          {
+            title: '性别',
+            dataIndex: 'sex',
+            key: 'sex'
+          }
+        ]}
+      />
+    </div>
   )
 }
