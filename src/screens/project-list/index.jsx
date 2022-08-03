@@ -12,7 +12,7 @@ export function ProjectListScreen() {
             <Link to="/">首页</Link>
           </li>
           <li>
-            <Link to="/AuthorList">作者列表</Link>
+            <Link to="/AuthorPage">作者列表</Link>
           </li>
           <li>
             <Link to="/BookPage">书籍列表</Link>
@@ -20,7 +20,7 @@ export function ProjectListScreen() {
         </ul>
         <Routes>
           <Route path="/" element={<div>欢迎</div>} />
-          <Route path="/AuthorList" element={<AuthorList />} />
+          <Route path="/AuthorPage" element={<AuthorList />} />
           <Route path="/BookPage" element={<BookPage />} />
         </Routes>
       </Router>

@@ -1,12 +1,12 @@
-import { Table } from 'antd'
+import { Button, Table } from 'antd'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 
-export function AuthorList() {
+export function AuthorList({ onAuthorClick }) {
   const [authors, setAuthors] = useState([])
 
   useEffect(() => {
-    getAuthors
+    getAuthors()
   }, [])
 
   const getAuthors = async () => {
@@ -24,7 +24,9 @@ export function AuthorList() {
           {
             title: '作者名',
             dataIndex: 'name',
-            key: 'name'
+            key: 'name',
+            // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+            render: (authorName, author, index) => <Button onClick={() => onAuthorClick(author.id)}>{author.name}</Button>
           },
           {
             title: '性别',
