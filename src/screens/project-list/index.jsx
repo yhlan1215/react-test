@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom'
 import { BookPage } from './BookPage'
-import { AuthorList } from './AuthorList'
+import { AuthorPage } from './AuthorPage'
 import './index.css'
 
 export function ProjectListScreen() {
@@ -20,7 +20,7 @@ export function ProjectListScreen() {
         </ul>
         <Routes>
           <Route path="/" element={<div>欢迎</div>} />
-          <Route path="/AuthorPage" element={<AuthorList />} />
+          <Route path="/AuthorPage" element={<AuthorPage />} />
           <Route path="/BookPage" element={<BookPage />} />
         </Routes>
       </Router>
