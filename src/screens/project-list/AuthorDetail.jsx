@@ -1,11 +1,14 @@
 import axios from 'axios'
 import { useEffect, useRef, useState } from 'react'
-import { Button, DatePicker, Form, Input, Radio } from 'antd'
+import { Button, DatePicker, Form, Input, message, Radio } from 'antd'
 import moment from 'moment'
+import { useParams, useNavigate } from 'react-router-dom'
 
-export function AuthorDetail({ authorId, onAuthorSaved }) {
+export function AuthorDetail() {
   const formRef = useRef()
   const [originalAuthor, setOriginalAuthor] = useState()
+  const { authorId } = useParams()
+  const nav = useNavigate()
 
   useEffect(() => {
     if (authorId) {
@@ -63,7 +66,8 @@ export function AuthorDetail({ authorId, onAuthorSaved }) {
         } else {
           await addAuthor(clonedAuthor)
         }
-        onAuthorSaved()
+        message.success('保存成功')
+        nav('/AuthorList')
       })
   }
 

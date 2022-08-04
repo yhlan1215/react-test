@@ -1,22 +1,25 @@
 import { useEffect, useRef, useState } from 'react'
-import { Button, Form, Input, InputNumber, Select, Radio } from 'antd'
+import { Button, Form, Input, InputNumber, Select, Radio, message } from 'antd'
 import axios from 'axios'
+import { useParams, useNavigate } from 'react-router-dom'
 
 const { Option } = Select
 
-export function BookDetail({ bookID, onBookSaved }) {
+export function BookDetail() {
   const formRef = useRef()
   const [originalBook, setOriginalBook] = useState()
   const [authors, setAuthors] = useState([])
+  const { bookId } = useParams()
+  const nav = useNavigate()
 
   useEffect(() => {
     getAuthors()
   }, [])
 
   useEffect(() => {
-    if (bookID) {
-      if (bookID !== 'newBook') {
-        getOneBook(bookID)
+    if (bookId) {
+      if (bookId !== 'newBook') {
+        getOneBook(bookId)
       } else {
         const newBook = {
           isOld: Boolean,
@@ -33,7 +36,7 @@ export function BookDetail({ bookID, onBookSaved }) {
         setOriginalBook(newBook)
       }
     }
-  }, [bookID])
+  }, [bookId])
 
   const getAuthors = async () => {
     const { data } = await axios({
@@ -53,9 +56,11 @@ export function BookDetail({ bookID, onBookSaved }) {
   const putOneBook = async (book) => {
     const { data } = await axios({
       method: 'put',
-      url: `http://localhost:8080/books/${bookID}`,
+      url: `http://localhost:8080/books/${bookId}`,
       data: book
     })
+    const author = authors.find((author) => author.id === data.author)
+    data.author = { id: author.id, name: author.name }
     formRef.current.setFieldsValue(data)
     setOriginalBook(data)
   }
@@ -77,13 +82,14 @@ export function BookDetail({ bookID, onBookSaved }) {
       .then(async (book) => {
         const clonedBook = JSON.parse(JSON.stringify(book))
         clonedBook.author = clonedBook.author.id
-        if (bookID !== 'newBook') {
+        if (bookId !== 'newBook') {
           await putOneBook(clonedBook)
         } else {
           await createBook(clonedBook)
         }
-        onBookSaved()
       })
+    message.success('保存成功')
+    nav('/BookList')
   }
 
   return (

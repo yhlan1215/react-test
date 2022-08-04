@@ -2,13 +2,15 @@ import { Button, Popover, Table } from 'antd'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { EditTwoTone, DeleteTwoTone } from '@ant-design/icons'
+import { Link, useNavigate } from 'react-router-dom'
 
-export function BookList({ onBookClick, onBookCreate, outdatedFlag }) {
+export function BookList() {
   const [books, setBooks] = useState([])
+  const nav = useNavigate()
 
   useEffect(() => {
     getBooks()
-  }, [outdatedFlag])
+  }, [])
 
   const getBooks = async () => {
     const { data } = await axios({
@@ -17,10 +19,10 @@ export function BookList({ onBookClick, onBookCreate, outdatedFlag }) {
     setBooks(data)
   }
 
-  const deleteBook = async (bookID) => {
+  const deleteBook = async (bookId) => {
     await axios({
       method: 'delete',
-      url: `http://localhost:8080/books/${bookID}`
+      url: `http://localhost:8080/books/${bookId}`
     })
     getBooks()
   }
@@ -28,7 +30,7 @@ export function BookList({ onBookClick, onBookCreate, outdatedFlag }) {
   return (
     <div>
       <Popover content="新建书籍">
-        <Button onClick={() => { onBookCreate() }}><EditTwoTone />新建</Button>
+        <Button onClick={() => { nav('/BookList/newBook') }}><EditTwoTone />新建</Button>
       </Popover>
       <Table
         dataSource={books}
@@ -38,7 +40,7 @@ export function BookList({ onBookClick, onBookCreate, outdatedFlag }) {
             dataIndex: 'name',
             key: 'name',
             // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-            render: (bookName, book, index) => <Popover content="书籍详情"> <a onClick={() => { onBookClick(book.id) }}>{book.name}</a></Popover>
+            render: (bookName, book, index) => <Link to={`/BookList/${book.id}`}>{book.name}</Link>
           },
           {
             title: '作者',

@@ -1,13 +1,15 @@
 import { Button, Table } from 'antd'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
-export function AuthorList({ onAuthorClick, onAuthorAdd, outdatedFlag }) {
+export function AuthorList({ onAuthorAdd }) {
   const [authors, setAuthors] = useState([])
+  const nav = useNavigate()
 
   useEffect(() => {
     getAuthors()
-  }, [outdatedFlag])
+  }, [])
 
   const getAuthors = async () => {
     const { data } = await axios({
@@ -18,7 +20,7 @@ export function AuthorList({ onAuthorClick, onAuthorAdd, outdatedFlag }) {
 
   return (
     <div>
-      <Button onClick={() => { onAuthorAdd() }}>新建</Button>
+      <Button onClick={() => { nav('/AuthorList/newAuthor') }}>新建</Button>
       <Table
         dataSource={authors}
         columns={[
@@ -27,13 +29,7 @@ export function AuthorList({ onAuthorClick, onAuthorAdd, outdatedFlag }) {
             dataIndex: 'name',
             key: 'name',
             render: (authorName, author, index) => (
-              // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-              <a onClick={() => {
-                onAuthorClick(author.id)
-              }}
-              >
-                {author.name}
-              </a>
+              <Link to={`/AuthorList/${author.id}`}>{author.name}</Link>
             )
           },
           {
