@@ -30,7 +30,7 @@ export function BookList() {
   return (
     <div>
       <Popover content="新建书籍">
-        <Button onClick={() => { nav('/BookList/newBook') }}><EditTwoTone />新建</Button>
+        <Button onClick={() => { nav('/BookList/newBook') }} style={{ marginBottom: '2vh' }}><EditTwoTone />新建</Button>
       </Popover>
       <Table
         dataSource={books}

@@ -2,6 +2,7 @@ import { Button, Table } from 'antd'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { EditTwoTone } from '@ant-design/icons'
 
 export function AuthorList({ onAuthorAdd }) {
   const [authors, setAuthors] = useState([])
@@ -20,7 +21,7 @@ export function AuthorList({ onAuthorAdd }) {
 
   return (
     <div>
-      <Button onClick={() => { nav('/AuthorList/newAuthor') }}>新建</Button>
+      <Button onClick={() => { nav('/AuthorList/newAuthor') }} style={{ marginBottom: '2vh' }}><EditTwoTone />新建</Button>
       <Table
         dataSource={authors}
         columns={[

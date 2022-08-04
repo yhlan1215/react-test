@@ -1,10 +1,13 @@
 import './App.css'
+import { BrowserRouter } from 'react-router-dom'
 import { ProjectListScreen } from './screens/project-list'
 
 function App() {
   return (
     <div className="App">
-      <ProjectListScreen />
+      <BrowserRouter>
+        <ProjectListScreen />
+      </BrowserRouter>
     </div>
   )
 }
