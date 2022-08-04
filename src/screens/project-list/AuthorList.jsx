@@ -2,12 +2,12 @@ import { Button, Table } from 'antd'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 
-export function AuthorList({ onAuthorClick, onAuthorAdd }) {
+export function AuthorList({ onAuthorClick, onAuthorAdd, outdatedFlag }) {
   const [authors, setAuthors] = useState([])
 
   useEffect(() => {
     getAuthors()
-  }, [])
+  }, [outdatedFlag])
 
   const getAuthors = async () => {
     const { data } = await axios({
@@ -39,7 +39,13 @@ export function AuthorList({ onAuthorClick, onAuthorAdd }) {
           {
             title: '性别',
             dataIndex: 'sex',
-            key: 'sex'
+            key: 'sex',
+            render: (sex, author, index) => {
+              if (sex === 'male') {
+                return '男'
+              }
+              return '女'
+            }
           }
         ]}
       />

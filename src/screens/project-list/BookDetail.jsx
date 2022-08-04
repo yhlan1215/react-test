@@ -88,7 +88,11 @@ export function BookDetail({ bookID, onBookSaved }) {
 
   return (
     <div>
-      <Form ref={formRef}>
+      <Form
+        ref={formRef}
+        labelCol={{ span: 4 }}
+        wrapperCol={{ span: 8 }}
+      >
         <Form.Item
           label="书籍名称"
           name="name"
@@ -141,7 +145,9 @@ export function BookDetail({ bookID, onBookSaved }) {
             <Option key="English" value="English">英语</Option>
           </Select>
         </Form.Item>
-        <Form.Item>
+        <Form.Item
+          wrapperCol={{ offset: 4, span: 8 }}
+        >
           <Button onClick={onSave} type="primary">保存</Button>
           <Button onClick={() => { formRef.current.setFieldsValue(originalBook) }}>取消</Button>
         </Form.Item>
