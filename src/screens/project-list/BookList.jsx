@@ -39,14 +39,12 @@ export function BookList() {
             title: '书籍名称',
             dataIndex: 'name',
             key: 'name',
-            // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
             render: (bookName, book, index) => <Link to={`/BookList/${book.id}`}>{book.name}</Link>
           },
           {
             title: '作者',
             dataIndex: 'author',
             key: 'author',
-            // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
             render: (author, book, index) => author.name
           },
           {
