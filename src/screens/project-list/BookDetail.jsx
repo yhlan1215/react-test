@@ -102,12 +102,14 @@ export function BookDetail() {
         <Form.Item
           label="书籍名称"
           name="name"
+          key="name"
         >
           <Input type="text" placeholder="请输入书名" />
         </Form.Item>
         <Form.Item
           label="作者"
           name={['author', 'id']}
+          key="id"
         >
           <Select>
             {authors.map((author) => <Option value={author.id}>{author.name}</Option>)}
@@ -116,12 +118,14 @@ export function BookDetail() {
         <Form.Item
           label="价格"
           name="price"
+          key="price"
         >
           <InputNumber min="0" prefix="¥" />
         </Form.Item>
         <Form.Item
           label="种类"
           name="category"
+          key="category"
         >
           <Select>
             <Option key="fiction" value="fiction">小说</Option>
@@ -136,6 +140,7 @@ export function BookDetail() {
         <Form.Item
           label="新旧"
           name="isOld"
+          key="isOld"
         >
           <Radio.Group>
             <Radio value={false}>新</Radio>
@@ -145,6 +150,7 @@ export function BookDetail() {
         <Form.Item
           label="语言"
           name="language"
+          key="language"
         >
           <Select>
             <Option key="Chinese" value="Chinese">中文</Option>
@@ -153,6 +159,7 @@ export function BookDetail() {
         </Form.Item>
         <Form.Item
           wrapperCol={{ offset: 4, span: 8 }}
+          key="action"
         >
           <Button onClick={onSave} type="primary">保存</Button>
           <Button onClick={() => { formRef.current.setFieldsValue(originalBook) }}>取消</Button>

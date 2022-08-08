@@ -23,6 +23,17 @@ export function BookStoreDetail() {
     }
   }, [bookStoreId])
 
+  useEffect(() => {
+    if (isModalVisible === true) {
+      const newBookIndex = {
+        bookStore: bookStoreId,
+        book: '',
+        theNumberOfBooks: 0
+      }
+      formRef.current.setFieldsValue(newBookIndex)
+    }
+  }, [isModalVisible])
+
   const getBooks = async () => {
     const { data } = await axios({
       url: 'http://localhost:8080/books'
@@ -63,23 +74,22 @@ export function BookStoreDetail() {
   }
 
   const addBook = () => {
-    const newBookIndex = {
-      bookStore: bookStoreId,
-      book: '',
-      theNumberOfBooks: 0
-    }
-    formRef.current.setFieldsValue(newBookIndex)
     setIsModalVisible(true)
   }
 
   const handleOk = async (bookIndex) => {
     await axios({
       method: 'post',
-      url: 'http:localhost:8080/bookindexes',
+      url: 'http://localhost:8080/bookindexes',
       data: bookIndex
     })
     setIsModalVisible(false)
     getBookStore()
+  }
+
+  const onSave = () => {
+    formRef.current.validateFields()
+      .then((book) => handleOk(book))
   }
 
   const handleCancel = () => {
@@ -91,20 +101,22 @@ export function BookStoreDetail() {
   } return (
     <div>
       <div><Button onClick={addBook}><EditTwoTone />添加</Button>
-        <Modal title="添加书籍" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+        <Modal title="添加书籍" visible={isModalVisible} onOk={onSave} onCancel={handleCancel}>
           <Form ref={formRef}>
             <Form.Item
               label="书籍"
               name="name"
+              key="name"
             >
               <Select>
                 {books.filter((book) => !bookStore.books.filter((bookIndex) => bookIndex.book === book.id).length)
-                  .map((book) => <Option value={book.id}>{book.name}</Option>)}
+                  .map((book) => <Option value={book.id} key={book.id}>{book.name}</Option>)}
               </Select>
             </Form.Item>
             <Form.Item
               label="数量"
               name="theNumberOfBooks"
+              key="theNumberOfBooks"
             >
               <InputNumber addonAfter="本" min="1" />
             </Form.Item>

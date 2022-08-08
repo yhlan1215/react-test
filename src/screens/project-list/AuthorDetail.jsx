@@ -82,18 +82,20 @@ export function AuthorDetail() {
         <Form.Item
           label="姓名"
           name="name"
+          key="name"
         >
           <Input />
         </Form.Item>
         <Form.Item
           label="性别"
           name="sex"
+          key="sex"
         >
           <Radio.Group>
-            <Radio value="male">
+            <Radio value="male" key="male">
               男
             </Radio>
-            <Radio value="female">
+            <Radio value="female" key="female">
               女
             </Radio>
           </Radio.Group>
@@ -101,11 +103,13 @@ export function AuthorDetail() {
         <Form.Item
           label="出生日期"
           name="birth"
+          key="birth"
         >
           <DatePicker disabledDate={(currentDate) => currentDate > moment()} />
         </Form.Item>
         <Form.Item
           wrapperCol={{ offset: 4, span: 8 }}
+          key="action"
         >
           <Button onClick={onSave} type="primary">保存</Button>
           <Button onClick={() => { formRef.current.setFieldsValue(originalAuthor) }}>取消</Button>
