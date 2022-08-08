@@ -15,6 +15,7 @@ export function ProjectListScreen() {
   const nav = useNavigate()
   const location = useLocation()
   const [selectedKeys, setSelectedKeys] = useState('')
+
   useEffect(() => {
     if (location.pathname.includes('/BookList')) {
       setSelectedKeys('book')
@@ -24,6 +25,7 @@ export function ProjectListScreen() {
       setSelectedKeys('bookStore')
     } else { setSelectedKeys('home') }
   }, [location])
+
   return (
     <Layout>
       <Sider collapsible style={{ height: '100vh' }}>
