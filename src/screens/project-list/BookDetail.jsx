@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Button, Form, Input, InputNumber, Select, Radio, message } from 'antd'
 import axios from 'axios'
 import { useParams, useNavigate } from 'react-router-dom'
+import { RollbackOutlined } from '@ant-design/icons'
 
 const { Option } = Select
 
@@ -94,6 +95,7 @@ export function BookDetail() {
 
   return (
     <div>
+      <Button onClick={() => { nav('/BookList') }}><RollbackOutlined /></Button>
       <Form
         ref={formRef}
         labelCol={{ span: 4 }}

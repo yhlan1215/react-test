@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { useEffect, useRef, useState } from 'react'
-import { Button, Form, InputNumber, Modal, Select, Table } from 'antd'
-import { useParams } from 'react-router-dom'
-import { EditTwoTone, DeleteTwoTone } from '@ant-design/icons'
+import { Button, Form, InputNumber, message, Modal, Popover, Select, Table } from 'antd'
+import { useNavigate, useParams } from 'react-router-dom'
+import { EditTwoTone, DeleteTwoTone, RollbackOutlined } from '@ant-design/icons'
 import { clone } from './utils'
 
 export function BookStoreDetail() {
@@ -12,6 +12,7 @@ export function BookStoreDetail() {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const { Option } = Select
   const formRef = useRef()
+  const nav = useNavigate()
 
   useEffect(() => {
     getBooks()
@@ -26,7 +27,6 @@ export function BookStoreDetail() {
   useEffect(() => {
     if (isModalVisible === true) {
       const newBookIndex = {
-        bookStore: bookStoreId,
         book: '',
         theNumberOfBooks: 0
       }
@@ -46,7 +46,10 @@ export function BookStoreDetail() {
     const { data } = await axios({
       url: `http://localhost:8080/bookstores/${bookStoreId}`
     })
-    data.books.forEach((book) => { book.buttonDisabled = false })
+    data.books.forEach((book) => {
+      book.buttonDisabled = false
+      book.key = book.id
+    })
     setBookStore(data)
   }
 
@@ -73,11 +76,11 @@ export function BookStoreDetail() {
     })
   }
 
-  const addBook = () => {
+  const openModal = () => {
     setIsModalVisible(true)
   }
 
-  const handleOk = async (bookIndex) => {
+  const addBook = async (bookIndex) => {
     await axios({
       method: 'post',
       url: 'http://localhost:8080/bookindexes',
@@ -89,7 +92,11 @@ export function BookStoreDetail() {
 
   const onSave = () => {
     formRef.current.validateFields()
-      .then((book) => handleOk(book))
+      .then((bookIndex) => {
+        bookIndex.bookStore = bookStoreId
+        addBook(bookIndex)
+      })
+    message.success('保存成功')
   }
 
   const handleCancel = () => {
@@ -100,13 +107,24 @@ export function BookStoreDetail() {
     return null
   } return (
     <div>
-      <div><Button onClick={addBook}><EditTwoTone />添加</Button>
-        <Modal title="添加书籍" visible={isModalVisible} onOk={onSave} onCancel={handleCancel}>
+      <Button onClick={() => { nav('/BookStoreList') }}><RollbackOutlined /></Button>
+      <Popover content="添加书籍">
+        <Button onClick={openModal}><EditTwoTone />添加</Button>
+      </Popover>
+      <div>
+        <Modal
+          title="添加书籍"
+          visible={isModalVisible}
+          onOk={onSave}
+          onCancel={handleCancel}
+          okText="确定"
+          cancelText="取消"
+        >
           <Form ref={formRef}>
             <Form.Item
               label="书籍"
-              name="name"
-              key="name"
+              name="book"
+              key="book"
             >
               <Select>
                 {books.filter((book) => !bookStore.books.filter((bookIndex) => bookIndex.book === book.id).length)
@@ -170,8 +188,11 @@ export function BookStoreDetail() {
             title: 'action',
             dataIndex: '',
             key: 'delete',
-            render: (action, bookIndex, index) => (<Button onClick={() => { deleteBookIndex(bookIndex.id) }}><DeleteTwoTone /></Button>)
-          }
+            render: (action, bookIndex, index) => (
+              <Popover content="删除书籍">
+                <Button onClick={() => { deleteBookIndex(bookIndex.id) }}><DeleteTwoTone /></Button>
+              </Popover>
+            ) }
         ]}
       />
     </div>

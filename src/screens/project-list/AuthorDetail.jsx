@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Button, DatePicker, Form, Input, message, Radio } from 'antd'
 import moment from 'moment'
 import { useParams, useNavigate } from 'react-router-dom'
+import { RollbackOutlined } from '@ant-design/icons'
 
 export function AuthorDetail() {
   const formRef = useRef()
@@ -74,6 +75,7 @@ export function AuthorDetail() {
   return (
 
     <div>
+      <Button onClick={() => { nav('/AuthorList') }}><RollbackOutlined /></Button>
       <Form
         ref={formRef}
         labelCol={{ span: 4 }}

@@ -1,4 +1,4 @@
-import { Table } from 'antd'
+import { Popover, Table } from 'antd'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
@@ -26,8 +26,11 @@ export function BookStoreList() {
             title: '书店名称',
             dataIndex: 'name',
             key: 'name',
-            render: (bookStoreName, bookStore, index) => <Link to={`/BookStoreList/${bookStore.id}`}>{bookStoreName}</Link>
-          }
+            render: (bookStoreName, bookStore, index) => (
+              <Popover content="书店详情">
+                <Link to={`/BookStoreList/${bookStore.id}`}>{bookStoreName}</Link>
+              </Popover>
+            ) }
         ]}
       />
     </div>

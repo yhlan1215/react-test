@@ -1,4 +1,4 @@
-import { Button, Table } from 'antd'
+import { Button, Popover, Table } from 'antd'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -16,12 +16,19 @@ export function AuthorList({ onAuthorAdd }) {
     const { data } = await axios({
       url: 'http://localhost:8080/authors'
     })
+    data.forEach((author) => { author.key = author.id })
     setAuthors(data)
   }
 
   return (
     <div>
-      <Button onClick={() => { nav('/AuthorList/newAuthor') }} style={{ marginBottom: '2vh' }}><EditTwoTone />新建</Button>
+      <Popover content="添加作者">
+        <Button
+          onClick={() => { nav('/AuthorList/newAuthor') }}
+          style={{ marginBottom: '2vh' }}
+        ><EditTwoTone />添加
+        </Button>
+      </Popover>
       <Table
         dataSource={authors}
         columns={[
@@ -30,7 +37,9 @@ export function AuthorList({ onAuthorAdd }) {
             dataIndex: 'name',
             key: 'name',
             render: (authorName, author, index) => (
-              <Link to={`/AuthorList/${author.id}`}>{author.name}</Link>
+              <Popover content="详情">
+                <Link to={`/AuthorList/${author.id}`}>{author.name}</Link>
+              </Popover>
             )
           },
           {

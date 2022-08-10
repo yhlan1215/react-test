@@ -6,17 +6,21 @@ import { Link, useNavigate } from 'react-router-dom'
 
 export function BookList() {
   const [books, setBooks] = useState([])
+  const [allLength, setAllLength] = useState(0)
+  const [page, setPage] = useState(1)
   const nav = useNavigate()
 
   useEffect(() => {
-    getBooks()
-  }, [])
+    getBooks(page)
+  }, [page])
 
-  const getBooks = async () => {
-    const { data } = await axios({
-      url: 'http://localhost:8080/books'
+  const getBooks = async (page) => {
+    const { data, headers } = await axios({
+      url: `http://localhost:8080/books/?page=${page}&limit=5`
     })
+    data.forEach((book) => { book.key = book.id })
     setBooks(data)
+    setAllLength(parseInt(headers.length, 10))
   }
 
   const deleteBook = async (bookId) => {
@@ -27,20 +31,40 @@ export function BookList() {
     getBooks()
   }
 
+  const paginationProps = {
+    total: allLength
+  }
+
   return (
     <div>
-      <Popover content="新建书籍">
-        <Button onClick={() => { nav('/BookList/newBook') }} style={{ marginBottom: '2vh' }}><EditTwoTone />新建</Button>
-      </Popover>
+      <div style={{ textAlign: 'right' }}>
+        <Popover content="新建书籍">
+          <Button
+            onClick={() => { nav('/BookList/newBook') }}
+            style={{ marginBottom: '2vh' }}
+          ><EditTwoTone />新建
+          </Button>
+        </Popover>
+      </div>
+      <div
+        style={{ marginBottom: '2vh' }}
+      >
+        总计{allLength}本
+      </div>
       <Table
+        onChange={(pagination) => { setPage(pagination.current) }}
+        pagination={paginationProps}
         dataSource={books}
         columns={[
           {
             title: '书籍名称',
             dataIndex: 'name',
             key: 'name',
-            render: (bookName, book, index) => <Link to={`/BookList/${book.id}`}>{book.name}</Link>
-          },
+            render: (bookName, book, index) => (
+              <Popover content="详情">
+                <Link to={`/BookList/${book.id}`}>{book.name}</Link>
+              </Popover>
+            ) },
           {
             title: '作者',
             dataIndex: 'author',
@@ -52,7 +76,11 @@ export function BookList() {
             dataIndex: 'delete',
             key: 'delete',
             align: 'right',
-            render: (bookName, book, index) => <Popover content="删除书籍"><Button onClick={() => { deleteBook(book.id) }}><DeleteTwoTone /></Button></Popover>
+            render: (bookName, book, index) => (
+              <Popover content="删除书籍">
+                <Button onClick={() => { deleteBook(book.id) }}><DeleteTwoTone /></Button>
+              </Popover>
+            )
           }
         ]}
       />
