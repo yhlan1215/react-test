@@ -6,10 +6,12 @@ import { EditTwoTone, DeleteTwoTone, RollbackOutlined } from '@ant-design/icons'
 import { clone } from './utils'
 
 export function BookStoreDetail() {
-  const [bookStore, setBookStore] = useState(undefined)
+  const [bookIndexes, setBookIndexes] = useState([])
   const [books, setBooks] = useState([])
   const { bookStoreId } = useParams()
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const [allLength, setAllLength] = useState(0)
+  const [page, setPage] = useState(1)
   const { Option } = Select
   const formRef = useRef()
   const nav = useNavigate()
@@ -20,9 +22,9 @@ export function BookStoreDetail() {
 
   useEffect(() => {
     if (bookStoreId) {
-      getBookStore()
+      getBookIndexes(bookStoreId, page)
     }
-  }, [bookStoreId])
+  }, [bookStoreId, page])
 
   useEffect(() => {
     if (isModalVisible === true) {
@@ -42,15 +44,16 @@ export function BookStoreDetail() {
     setBooks(data)
   }
 
-  const getBookStore = async () => {
-    const { data } = await axios({
-      url: `http://localhost:8080/bookstores/${bookStoreId}`
+  const getBookIndexes = async (bookStoreId, page) => {
+    const { data, headers } = await axios({
+      url: `http://localhost:8080/bookindexes?bookStore=${bookStoreId}&page=${page}&limit=5`
     })
-    data.books.forEach((book) => {
+    data.forEach((book) => {
       book.buttonDisabled = false
       book.key = book.id
     })
-    setBookStore(data)
+    setBookIndexes(data)
+    setAllLength(parseInt(headers.length, 10))
   }
 
   const plusOne = async (bookIndexId) => {
@@ -58,7 +61,7 @@ export function BookStoreDetail() {
       method: 'put',
       url: `http://localhost:8080/bookindexes/${bookIndexId}/plus`
     })
-    getBookStore()
+    getBookIndexes()
   }
 
   const minusOne = async (bookIndexId) => {
@@ -66,7 +69,7 @@ export function BookStoreDetail() {
       method: 'put',
       url: `http://localhost:8080/bookindexes/${bookIndexId}/minus`
     })
-    getBookStore()
+    getBookIndexes()
   }
 
   const deleteBookIndex = async (bookIndexId) => {
@@ -87,7 +90,7 @@ export function BookStoreDetail() {
       data: bookIndex
     })
     setIsModalVisible(false)
-    getBookStore()
+    getBookIndexes()
   }
 
   const onSave = () => {
@@ -103,14 +106,26 @@ export function BookStoreDetail() {
     setIsModalVisible(false)
   }
 
-  if (!bookStore) {
+  const paginationProps = {
+    total: allLength,
+    defaultPageSize: 5
+  }
+
+  if (!bookIndexes) {
     return null
   } return (
     <div>
-      <Button onClick={() => { nav('/BookStoreList') }}><RollbackOutlined /></Button>
-      <Popover content="添加书籍">
-        <Button onClick={openModal}><EditTwoTone />添加</Button>
-      </Popover>
+      <div>
+        <Button onClick={() => { nav('/BookStoreList') }}><RollbackOutlined /></Button>
+      </div>
+      <div>
+        总计{allLength}本
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <Popover content="添加书籍">
+          <Button onClick={openModal}><EditTwoTone />添加</Button>
+        </Popover>
+      </div>
       <div>
         <Modal
           title="添加书籍"
@@ -127,7 +142,7 @@ export function BookStoreDetail() {
               key="book"
             >
               <Select>
-                {books.filter((book) => !bookStore.books.filter((bookIndex) => bookIndex.book === book.id).length)
+                {books.filter((book) => !bookIndexes.filter((bookIndex) => bookIndex.book === book.id).length)
                   .map((book) => <Option value={book.id} key={book.id}>{book.name}</Option>)}
               </Select>
             </Form.Item>
@@ -142,7 +157,11 @@ export function BookStoreDetail() {
         </Modal>
       </div>
       <Table
-        dataSource={bookStore.books}
+        pagination={paginationProps}
+        onChange={(pagination) => {
+          setPage(pagination.current)
+        }}
+        dataSource={bookIndexes}
         columns={[
           {
             title: '书籍',
@@ -158,27 +177,27 @@ export function BookStoreDetail() {
               <div style={{ alignItems: 'center', display: 'flex', flexDirection: 'row' }}>
                 <Button
                   onClick={async () => {
-                    const clonedBookStore = clone(bookStore)
-                    clonedBookStore.books[index].buttonDisabled = true
-                    setBookStore(clonedBookStore)
+                    const clonedBookIndexes = clone(bookIndexes)
+                    clonedBookIndexes[index].buttonDisabled = true
+                    setBookIndexes(clonedBookIndexes)
                     await plusOne(bookIndex.id)
                   }}
                   style={{ marginRight: '1rem' }}
                   size="small"
-                  disabled={bookStore.books[index].buttonDisabled}
+                  disabled={bookIndex.buttonDisabled}
                 >+
                 </Button>
                 <div style={{ display: 'flex', justifyContent: 'center', width: '2rem' }}>{num}</div>
                 <Button
                   onClick={async () => {
-                    const clonedBookStore = clone(bookStore)
-                    clonedBookStore.books[index].buttonDisabled = true
-                    setBookStore(clonedBookStore)
+                    const clonedBookIndexes = clone(bookIndexes)
+                    clonedBookIndexes[index].buttonDisabled = true
+                    setBookIndexes(clonedBookIndexes)
                     await minusOne(bookIndex.id)
                   }}
                   style={{ marginLeft: '1rem' }}
                   size="small"
-                  disabled={!num || bookStore.books[index].buttonDisabled}
+                  disabled={!num || bookIndexes[index].buttonDisabled}
                 >-
                 </Button>
               </div>

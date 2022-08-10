@@ -5,21 +5,34 @@ import { Link } from 'react-router-dom'
 
 export function BookStoreList() {
   const [bookStores, setBookStores] = useState([])
+  const [allLength, setAllLength] = useState(0)
+  const [page, setPage] = useState(1)
 
   useEffect(() => {
-    getBookStores()
-  }, [])
+    getBookStores(page)
+  }, [page])
 
-  const getBookStores = async () => {
-    const { data } = await axios({
-      url: 'http://localhost:8080/bookstores'
+  const getBookStores = async (page) => {
+    const { data, headers } = await axios({
+      url: `http://localhost:8080/bookstores?page=${page}&limit=5`
     })
+    setAllLength(parseInt(headers.length, 10))
     setBookStores(data)
+  }
+
+  const paginationProps = {
+    defaultPageSize: 5,
+    total: allLength
   }
 
   return (
     <div>
+      <div>
+        总计{allLength}家
+      </div>
       <Table
+        pagination={paginationProps}
+        onChange={(pagination) => { setPage(pagination.current) }}
         dataSource={bookStores}
         columns={[
           {

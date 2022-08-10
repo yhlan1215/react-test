@@ -32,6 +32,7 @@ export function BookList() {
   }
 
   const paginationProps = {
+    defaultPageSize: 5,
     total: allLength
   }
 

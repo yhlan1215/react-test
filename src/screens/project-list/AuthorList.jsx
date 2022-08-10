@@ -6,30 +6,45 @@ import { EditTwoTone } from '@ant-design/icons'
 
 export function AuthorList({ onAuthorAdd }) {
   const [authors, setAuthors] = useState([])
+  const [allLength, setAllLength] = useState(0)
+  const [page, setPage] = useState(1)
   const nav = useNavigate()
 
   useEffect(() => {
-    getAuthors()
-  }, [])
+    getAuthors(page)
+  }, [page])
 
-  const getAuthors = async () => {
-    const { data } = await axios({
-      url: 'http://localhost:8080/authors'
+  const getAuthors = async (page) => {
+    const { data, headers } = await axios({
+      url: `http://localhost:8080/authors/?page=${page}&limit=5`
     })
     data.forEach((author) => { author.key = author.id })
     setAuthors(data)
+    setAllLength(parseInt(headers.length, 10))
+  }
+
+  const paginationProps = {
+    defaultPageSize: 5,
+    total: allLength
   }
 
   return (
     <div>
-      <Popover content="添加作者">
-        <Button
-          onClick={() => { nav('/AuthorList/newAuthor') }}
-          style={{ marginBottom: '2vh' }}
-        ><EditTwoTone />添加
-        </Button>
-      </Popover>
+      <div>
+        总计{allLength}名
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <Popover content="添加作者">
+          <Button
+            onClick={() => { nav('/AuthorList/newAuthor') }}
+            style={{ marginBottom: '2vh' }}
+          ><EditTwoTone />添加
+          </Button>
+        </Popover>
+      </div>
       <Table
+        pagination={paginationProps}
+        onChange={(pagination) => { setPage(pagination.current) }}
         dataSource={authors}
         columns={[
           {
