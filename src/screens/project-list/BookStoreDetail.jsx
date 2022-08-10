@@ -61,7 +61,7 @@ export function BookStoreDetail() {
       method: 'put',
       url: `http://localhost:8080/bookindexes/${bookIndexId}/plus`
     })
-    getBookIndexes()
+    getBookIndexes(bookStoreId, page)
   }
 
   const minusOne = async (bookIndexId) => {
@@ -69,7 +69,7 @@ export function BookStoreDetail() {
       method: 'put',
       url: `http://localhost:8080/bookindexes/${bookIndexId}/minus`
     })
-    getBookIndexes()
+    getBookIndexes(bookStoreId, page)
   }
 
   const deleteBookIndex = async (bookIndexId) => {
@@ -90,7 +90,7 @@ export function BookStoreDetail() {
       data: bookIndex
     })
     setIsModalVisible(false)
-    getBookIndexes()
+    getBookIndexes(bookStoreId, page)
   }
 
   const onSave = () => {
