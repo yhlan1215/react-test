@@ -7,20 +7,30 @@ import { Link, useNavigate } from 'react-router-dom'
 export function BookList() {
   const [books, setBooks] = useState([])
   const [allLength, setAllLength] = useState(0)
+  const [language, setLanguage] = useState('')
   const [page, setPage] = useState(1)
   const nav = useNavigate()
 
   useEffect(() => {
-    getBooks(page)
+    getBooks(page, language)
   }, [page])
 
-  const getBooks = async (page) => {
-    const { data, headers } = await axios({
-      url: `http://localhost:8080/books/?page=${page}&limit=5`
-    })
-    data.forEach((book) => { book.key = book.id })
-    setBooks(data)
-    setAllLength(parseInt(headers.length, 10))
+  const getBooks = async (page, language) => {
+    if (language === '') {
+      const { data, headers } = await axios({
+        url: `http://localhost:8080/books/?page=${page}&limit=5`
+      })
+      data.forEach((book) => { book.key = book.id })
+      setBooks(data)
+      setAllLength(parseInt(headers.length, 10))
+    } else {
+      const { data, headers } = await axios({
+        url: `http://localhost:8080/books/?page=${page}&limit=5&language=${language}`
+      })
+      data.forEach((book) => { book.key = book.id })
+      setBooks(data)
+      setAllLength(parseInt(headers.length, 10))
+    }
   }
 
   const deleteBook = async (bookId) => {
@@ -65,7 +75,19 @@ export function BookList() {
               <Popover content="详情">
                 <Link to={`/BookList/${book.id}`}>{book.name}</Link>
               </Popover>
-            ) },
+            ),
+            filters: [
+              {
+                text: 'Chinese',
+                value: 'Chinese'
+              },
+              {
+                text: 'English',
+                value: 'English'
+              }
+            ],
+            onFilter: (value) => { setLanguage(value) }
+          },
           {
             title: '作者',
             dataIndex: 'author',

@@ -12,12 +12,14 @@ export function BookStoreDetail() {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [allLength, setAllLength] = useState(0)
   const [page, setPage] = useState(1)
+  const [allBookIndexes, setAllBookIndexes] = useState([])
   const { Option } = Select
   const formRef = useRef()
   const nav = useNavigate()
 
   useEffect(() => {
     getBooks()
+    getAllBookIndexes()
   }, [])
 
   useEffect(() => {
@@ -40,17 +42,23 @@ export function BookStoreDetail() {
     const { data } = await axios({
       url: 'http://localhost:8080/books'
     })
-    data.forEach((book) => { book.OptionDisabled = false })
     setBooks(data)
+  }
+
+  const getAllBookIndexes = async () => {
+    const { data } = await axios({
+      url: `http://localhost:8080/bookindexes?bookStore=${bookStoreId}`
+    })
+    setAllBookIndexes(data)
   }
 
   const getBookIndexes = async (bookStoreId, page) => {
     const { data, headers } = await axios({
       url: `http://localhost:8080/bookindexes?bookStore=${bookStoreId}&page=${page}&limit=5`
     })
-    data.forEach((book) => {
-      book.buttonDisabled = false
-      book.key = book.id
+    data.forEach((bookIndex) => {
+      bookIndex.buttonDisabled = false
+      bookIndex.key = bookIndex.id
     })
     setBookIndexes(data)
     setAllLength(parseInt(headers.length, 10))
@@ -142,7 +150,7 @@ export function BookStoreDetail() {
               key="book"
             >
               <Select>
-                {books.filter((book) => !bookIndexes.filter((bookIndex) => bookIndex.book === book.id).length)
+                {books.filter((book) => !allBookIndexes.filter((bookIndex) => bookIndex.book === book.id).length)
                   .map((book) => <Option value={book.id} key={book.id}>{book.name}</Option>)}
               </Select>
             </Form.Item>
