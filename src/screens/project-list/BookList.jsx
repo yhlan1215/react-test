@@ -7,30 +7,23 @@ import { Link, useNavigate } from 'react-router-dom'
 export function BookList() {
   const [books, setBooks] = useState([])
   const [allLength, setAllLength] = useState(0)
-  const [language, setLanguage] = useState('')
+  const [language, setLanguage] = useState([])
   const [page, setPage] = useState(1)
   const nav = useNavigate()
 
   useEffect(() => {
-    getBooks(page, language)
-  }, [page])
+    getBooks()
+  }, [page, language])
 
-  const getBooks = async (page, language) => {
-    if (language === '') {
-      const { data, headers } = await axios({
-        url: `http://localhost:8080/books/?page=${page}&limit=5`
-      })
-      data.forEach((book) => { book.key = book.id })
-      setBooks(data)
-      setAllLength(parseInt(headers.length, 10))
-    } else {
-      const { data, headers } = await axios({
-        url: `http://localhost:8080/books/?page=${page}&limit=5&language=${language}`
-      })
-      data.forEach((book) => { book.key = book.id })
-      setBooks(data)
-      setAllLength(parseInt(headers.length, 10))
-    }
+  const getBooks = async () => {
+    let bookUrl = `http://localhost:8080/books/?page=${page}&limit=5`
+    if (language.length) bookUrl += `&language=${language.toString()}`
+    const { data, headers } = await axios({
+      url: bookUrl
+    })
+    data.forEach((book) => { book.key = book.id })
+    setBooks(data)
+    setAllLength(parseInt(headers.length, 10))
   }
 
   const deleteBook = async (bookId) => {
@@ -63,7 +56,10 @@ export function BookList() {
         总计{allLength}本
       </div>
       <Table
-        onChange={(pagination) => { setPage(pagination.current) }}
+        onChange={(pagination, filters) => {
+          setPage(pagination.current)
+          setLanguage(filters.name)
+        }}
         pagination={paginationProps}
         dataSource={books}
         columns={[
@@ -78,15 +74,14 @@ export function BookList() {
             ),
             filters: [
               {
-                text: 'Chinese',
+                text: '中文',
                 value: 'Chinese'
               },
               {
-                text: 'English',
+                text: '英语',
                 value: 'English'
               }
-            ],
-            onFilter: (value) => { setLanguage(value) }
+            ]
           },
           {
             title: '作者',
