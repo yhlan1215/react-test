@@ -13,6 +13,8 @@ export function BookStoreDetail() {
   const [allLength, setAllLength] = useState(0)
   const [page, setPage] = useState(1)
   const [allBookIndexes, setAllBookIndexes] = useState([])
+  const [field, setField] = useState('')
+  const [order, setOrder] = useState('')
   const { Option } = Select
   const formRef = useRef()
   const nav = useNavigate()
@@ -26,7 +28,7 @@ export function BookStoreDetail() {
     if (bookStoreId) {
       getBookIndexes(bookStoreId, page)
     }
-  }, [bookStoreId, page])
+  }, [bookStoreId, page, field, order])
 
   useEffect(() => {
     if (isModalVisible === true) {
@@ -53,8 +55,16 @@ export function BookStoreDetail() {
   }
 
   const getBookIndexes = async (bookStoreId, page) => {
+    let bookIndexUrl = `http://localhost:8080/bookindexes?bookStore=${bookStoreId}&page=${page}&limit=5`
+    if (field) {
+      if (order === 'ascend') {
+        bookIndexUrl += `&sort=-${field}`
+      } else if (order === 'descend') {
+        bookIndexUrl += `&sort=${field}`
+      }
+    }
     const { data, headers } = await axios({
-      url: `http://localhost:8080/bookindexes?bookStore=${bookStoreId}&page=${page}&limit=5`
+      url: bookIndexUrl
     })
     data.forEach((bookIndex) => {
       bookIndex.buttonDisabled = false
@@ -166,8 +176,10 @@ export function BookStoreDetail() {
       </div>
       <Table
         pagination={paginationProps}
-        onChange={(pagination) => {
+        onChange={(pagination, filters, sorter) => {
           setPage(pagination.current)
+          setField(sorter.field)
+          setOrder(sorter.order)
         }}
         dataSource={bookIndexes}
         columns={[
@@ -175,7 +187,11 @@ export function BookStoreDetail() {
             title: '书籍',
             dataIndex: 'book',
             key: 'book',
-            render: (bookId, book, index) => (books.find((book) => book.id === bookId) ? books.find((book) => book.id === bookId).name : '找不到')
+            render: (bookId, book, index) => (
+              books.find(
+                (book) => book.id === bookId
+              ) ? books.find((book) => book.id === bookId).name : '找不到'),
+            sorter: true
           },
           {
             title: '数量',
@@ -209,7 +225,8 @@ export function BookStoreDetail() {
                 >-
                 </Button>
               </div>
-            )
+            ),
+            sorter: true
           },
           {
             title: 'action',

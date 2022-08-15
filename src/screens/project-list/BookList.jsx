@@ -6,18 +6,38 @@ import { Link, useNavigate } from 'react-router-dom'
 
 export function BookList() {
   const [books, setBooks] = useState([])
+  const [authors, setAuthors] = useState([])
   const [allLength, setAllLength] = useState(0)
   const [language, setLanguage] = useState([])
+  const [category, setCategory] = useState([])
+  const [isOld, setIsOld] = useState([])
+  const [author, setAuthor] = useState([])
   const [page, setPage] = useState(1)
+  const [field, setField] = useState('')
+  const [order, setOrder] = useState('')
   const nav = useNavigate()
 
   useEffect(() => {
+    getAuthors()
+  }, [])
+
+  useEffect(() => {
     getBooks()
-  }, [page, language])
+  }, [page, language, category, isOld, author, field, order])
 
   const getBooks = async () => {
     let bookUrl = `http://localhost:8080/books/?page=${page}&limit=5`
-    if (language.length) bookUrl += `&language=${language.toString()}`
+    if (language && language.length) { bookUrl += `&language=${language.toString()}` }
+    if (category && category.length) { bookUrl += `&category=${category.toString()}` }
+    if (author && author.length) { bookUrl += `&author=${author.toString()}` }
+    if (isOld && isOld.length) { bookUrl += `&isOld=${isOld.toString()}` }
+    if (field) {
+      if (order === 'ascend') {
+        bookUrl += `&sort=-${field}`
+      } else if (order === 'descend') {
+        bookUrl += `&sort=${field}`
+      }
+    }
     const { data, headers } = await axios({
       url: bookUrl
     })
@@ -32,6 +52,13 @@ export function BookList() {
       url: `http://localhost:8080/books/${bookId}`
     })
     getBooks()
+  }
+
+  const getAuthors = async () => {
+    const { data } = await axios({
+      url: 'http://localhost:8080/authors'
+    })
+    setAuthors(data)
   }
 
   const paginationProps = {
@@ -56,9 +83,14 @@ export function BookList() {
         总计{allLength}本
       </div>
       <Table
-        onChange={(pagination, filters) => {
+        onChange={(pagination, filters, sorter) => {
           setPage(pagination.current)
-          setLanguage(filters.name)
+          setLanguage(filters.language)
+          setCategory(filters.category)
+          setAuthor(filters.author)
+          setIsOld(filters.isOld)
+          setField(sorter.field)
+          setOrder(sorter.order)
         }}
         pagination={paginationProps}
         dataSource={books}
@@ -72,6 +104,49 @@ export function BookList() {
                 <Link to={`/BookList/${book.id}`}>{book.name}</Link>
               </Popover>
             ),
+            sorter: true
+          },
+          {
+            title: '新旧',
+            dataIndex: 'isOld',
+            key: 'isOld',
+            render: (isOld, book, index) => {
+              if (isOld === true) { return '旧' }
+              return '新'
+            },
+            filters: [
+              {
+                text: '新',
+                value: false
+              },
+              {
+                text: '旧',
+                value: true
+              }
+            ],
+            sorter: true
+          },
+          {
+            title: '作者',
+            dataIndex: 'author',
+            key: 'author',
+            render: (author, book, index) => author.name,
+            filters: authors.map((author) => ({
+              text: author.name,
+              value: author.id
+            })),
+            sorter: true
+          },
+          {
+            title: '语言',
+            dataIndex: 'language',
+            key: 'language',
+            render: (language, book, index) => {
+              if (language === 'English') {
+                return '英语'
+              }
+              return '中文'
+            },
             filters: [
               {
                 text: '中文',
@@ -81,13 +156,64 @@ export function BookList() {
                 text: '英语',
                 value: 'English'
               }
-            ]
+            ],
+            sorter: true
           },
           {
-            title: '作者',
-            dataIndex: 'author',
-            key: 'author',
-            render: (author, book, index) => author.name
+            title: '种类',
+            dataIndex: 'category',
+            key: 'category',
+            render: (category, book, index) => {
+              switch (category) {
+                case 'fiction':
+                  return '小说'
+                case 'literature':
+                  return '文学'
+                case 'art':
+                  return '艺术'
+                case 'entertainment fashion':
+                  return '娱乐时尚'
+                case 'animation humor':
+                  return '动画幽默'
+                case 'tourism':
+                  return '旅游'
+                case 'map geography':
+                  return '地图地理'
+                default:
+                  return '不知道'
+              }
+            },
+            filters: [
+              {
+                text: '小说',
+                value: 'fiction'
+              },
+              {
+                text: '文学',
+                value: 'literature'
+              },
+              {
+                text: '艺术',
+                value: 'art'
+              },
+              {
+                text: '动画幽默',
+                value: 'animation humor'
+              },
+              {
+                text: '娱乐时尚',
+                value: 'entertainment fashion'
+              },
+              {
+                text: '旅游',
+                value: 'tourism'
+              },
+              {
+                text: '地图地理',
+                value: 'map geography'
+              }
+            ],
+            sorter: true
           },
           {
             title: 'action',

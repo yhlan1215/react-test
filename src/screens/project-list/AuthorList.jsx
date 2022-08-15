@@ -8,17 +8,33 @@ export function AuthorList({ onAuthorAdd }) {
   const [authors, setAuthors] = useState([])
   const [allLength, setAllLength] = useState(0)
   const [page, setPage] = useState(1)
+  const [field, setField] = useState('')
+  const [order, setOrder] = useState('')
+  const [sex, setSex] = useState([])
   const nav = useNavigate()
 
   useEffect(() => {
-    getAuthors(page)
-  }, [page])
+    getAuthors()
+  }, [page, field, order, sex])
 
-  const getAuthors = async (page) => {
+  const getAuthors = async () => {
+    let authorUrl = `http://localhost:8080/authors/?page=${page}&limit=5`
+    if (field) {
+      if (order === 'ascend') {
+        authorUrl += `&sort=-${field}`
+      } else if (order === 'descend') {
+        authorUrl += `&sort=${field}`
+      }
+    }
+    if (sex && sex.length) {
+      authorUrl += `&sex=${sex.toString()}`
+    }
     const { data, headers } = await axios({
-      url: `http://localhost:8080/authors/?page=${page}&limit=5`
+      url: authorUrl
     })
-    data.forEach((author) => { author.key = author.id })
+    data.forEach((author) => {
+      author.key = author.id
+    })
     setAuthors(data)
     setAllLength(parseInt(headers.length, 10))
   }
@@ -44,7 +60,12 @@ export function AuthorList({ onAuthorAdd }) {
       </div>
       <Table
         pagination={paginationProps}
-        onChange={(pagination) => { setPage(pagination.current) }}
+        onChange={(pagination, filters, sorter) => {
+          setPage(pagination.current)
+          setField(sorter.field)
+          setOrder(sorter.order)
+          setSex(filters.sex)
+        }}
         dataSource={authors}
         columns={[
           {
@@ -55,7 +76,8 @@ export function AuthorList({ onAuthorAdd }) {
               <Popover content="详情">
                 <Link to={`/AuthorList/${author.id}`}>{author.name}</Link>
               </Popover>
-            )
+            ),
+            sorter: true
           },
           {
             title: '性别',
@@ -66,7 +88,18 @@ export function AuthorList({ onAuthorAdd }) {
                 return '男'
               }
               return '女'
-            }
+            },
+            sorter: true,
+            filters: [
+              {
+                text: '男',
+                value: 'male'
+              },
+              {
+                text: '女',
+                value: 'female'
+              }
+            ]
           }
         ]}
       />
