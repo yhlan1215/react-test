@@ -134,7 +134,7 @@ export function BookStoreDetail() {
   } return (
     <div>
       <div>
-        <Button onClick={() => { nav('/BookStoreList') }}><RollbackOutlined /></Button>
+        <Button onClick={() => { nav(-1) }}><RollbackOutlined /></Button>
       </div>
       <div>
         总计{allLength}本

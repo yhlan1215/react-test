@@ -75,7 +75,7 @@ export function AuthorDetail() {
   return (
 
     <div>
-      <Button onClick={() => { nav('/AuthorList') }}><RollbackOutlined /></Button>
+      <Button onClick={() => { nav(-1) }}><RollbackOutlined /></Button>
       <Form
         ref={formRef}
         labelCol={{ span: 4 }}
